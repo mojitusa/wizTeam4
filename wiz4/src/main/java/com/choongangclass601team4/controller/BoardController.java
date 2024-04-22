@@ -16,7 +16,7 @@ import lombok.extern.log4j.Log4j;
 
 @Controller
 @Log4j
-@RequestMapping("/baord/*")
+@RequestMapping("/board/*")
 @AllArgsConstructor
 public class BoardController {
 
@@ -28,6 +28,12 @@ public class BoardController {
 		log.info("list");
 		
 		model.addAttribute("list", service.getList());
+		
+	}
+	
+	@GetMapping("/register")
+	public void register() {
+		
 	}
 	
 	@PostMapping("/register")
@@ -42,11 +48,32 @@ public class BoardController {
 		return "redirect:/board/list";
 	}
 	
-	@GetMapping("/get")
+	@GetMapping({"/get", "/modify"})
 	public void get(@RequestParam("bno") long bno, Model model) {
 		
-		log.info("/get");
+		log.info("/get or modify");
 		model.addAttribute("board", service.get(bno));
+	}
+	
+	@PostMapping("/modofy")
+	public String modify(BoardVO board, RedirectAttributes rttr) {
+		
+		log.info("modify: " + board);
+		
+		if (service.modify(board)) {
+			rttr.addFlashAttribute("result", "success");
+		}
+		return "redirect:/board/list";
+	}
+	
+	@PostMapping("/remove")
+	public String remove(@RequestParam("bno") long bno, RedirectAttributes rttr) {
+		
+		log.info("remove..." + bno);
+		if (service.remove(bno)) {
+			rttr.addFlashAttribute("result", "success");
+		}
+		return "redirect:/board/list";
 	}
 	
 }
